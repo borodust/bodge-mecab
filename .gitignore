@@ -11,5 +11,8 @@
 # system dependent junk
 local/
 
+# build junk
+lib/*.bodged
+
 # macOS crap
 **/.DS_Store

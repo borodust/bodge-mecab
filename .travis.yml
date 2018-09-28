@@ -1,0 +1,77 @@
+language: c
+sudo: true
+dist: xenial
+
+env:
+  global:
+    - NAME: mecab
+    - PATH: ~/bin/:$PATH
+    - secure: "F13trpLnw/3Sjs0A99BxxBLtonMmtLUtFAEyfH6y3263HyKjh8K6y6gEPUYDPye2pYIJzaOiPeYEZqn+ePI3KKE2KmiXbVzlnMYEfOqsoHAQM8axkSXMmS5adIOqA5HFbOomT83nOQlM/iEbzHHsUj0QrFSoGP26fgOZZTt5fSSh1BvtWT6mrbqPiwlo2X9swSREJDGkwcbSO+QawhtKUcmDLp13pFev5M+MOqLubPgZFuA0sXDkshEt+0dAeIW5vGgKZu0+Y0PumSakVSUXLCC+cm7Kzw5NjjgniBiKcl4JH21fBplxNb7T4mHRMMl3wgo+qvQ0828ESyibQSxzRxO6NHu2wcdDr5g9gGoNa3C9c7laJlcM9NP06T2GJcVMAIwjqtWFfi9zrBHEBXogIqs9ewZ4UhzZMhhC3i75d8p2ne027kxykbteTy8wbBgF840bNxkSKs1q2thsrsgiZYsXuCk13Fq0MYQGaYOlHJlcAZ20HRkAsKOXGpiGVmJtAm6ufajigGjtHe3m4zJoaGKoVvD2jvFa9uxUvt3sQmbpi8mHcEC5MmXG1ymynKFkKyifTSClqDd0gut91AnU0lw2lerga2hw4RLSfrZY4GBTDTodcSjMuafURB9rha2ICQf2SgX/9WpQfTgU7B0rsciPURFwAKt4ww0GCeG0pZI="
+
+matrix:
+  include:
+  - os: linux
+    env:
+      - TARGET_ARCH=i686
+      - CFLAGS=-m32
+      - EXTENSION=so
+  - os: linux
+    env:
+      - TARGET_ARCH=x86_64
+      - CFLAGS=-m64
+      - EXTENSION=so
+  - os: osx
+    env:
+      - TARGET_ARCH=i686
+      - CFLAGS=-m32
+      - EXTENSION=dylib
+  - os: osx
+    env:
+      - TARGET_ARCH=x86_64
+      - CFLAGS=-m64
+      - EXTENSION=dylib
+
+branches:
+  only:
+  - "/^v\\d+(\\.\\d+)+$/"
+
+cache:
+  directories:
+    - $HOME/Library/Caches/Homebrew
+
+before_install:
+  - >
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get update -q
+      sudo -E apt-get -yq --no-install-suggests --no-install-recommends install patchelf g++ g++-multilib libc6-dev-i386 libtool-bin autoconf automake
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+       brew update && brew install libtool;
+    fi
+
+
+install:
+  - curl -L http://bodge.borodust.org/files/install.sh | sh
+  - curl -L http://bodge.borodust.org/files/c2ffi-$TRAVIS_OS_NAME-$TARGET_ARCH.zip -o /tmp/c2ffi.zip
+  - cd ~/bin/ && unzip /tmp/c2ffi.zip
+  - ln -s $TRAVIS_BUILD_DIR/ ~/quicklisp/local-projects
+
+script:
+  - cd $TRAVIS_BUILD_DIR/lib/ && make clean build
+  - rm -rf $TRAVIS_BUILD_DIR/spec/*
+  - lisp "$TRAVIS_BUILD_DIR/regen-spec.lisp" $TARGET_ARCH
+  - cd $TRAVIS_BUILD_DIR/ && zip -r spec.zip spec/
+
+before_deploy:
+  - export TARGET_FILE=$TRAVIS_BUILD_DIR/lib$NAME.$EXTENSION.bodged-$TARGET_ARCH-$TRAVIS_OS_NAME-$TRAVIS_BRANCH
+  - export SPEC_ARCHIVE=$TARGET_FILE-spec.zip
+  - mv $TRAVIS_BUILD_DIR/lib/lib$NAME.$EXTENSION.bodged $TARGET_FILE
+  - mv $TRAVIS_BUILD_DIR/spec.zip $SPEC_ARCHIVE
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: [$TARGET_FILE, $SPEC_ARCHIVE]
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true

@@ -5,30 +5,22 @@ Wrapper over [`MeCab`](http://taku910.github.io/mecab/) library.
 
 ## Install
 
-### MeCab
-
-#### macOS
-```bash
-brew install mecab mecab-ipadic
-```
-
-### cl-mecab
-* Install [`quicklisp`](https://quicklisp.org/)
-* Clone repository to `~/quicklisp/local-projects/`
-* Load wrapper
-
+### bodge-mecab
 ```lisp
-(ql:quickload :cl-mecab)
+;; add cl-bodge distribution into quicklisp
+(ql-dist:install-dist "http://bodge.borodust.org/dist/org.borodust.bodge.txt")
+
+;; load the wrapper
+(ql:quickload :bodge-mecab)
 ```
 
 ## Usage
 
-`:%mecab` package contains direct bindings to MeCab C API. `:mecab`, on the other hand, is
-intended for thin lispified routines over native interface.
+`%mecab` package contains direct bindings to MeCab C API.
 
 ## Example
 
 ```lisp
-(ql:quickload :cl-mecab)
+(ql:quickload '(mecab-blob bodge-mecab))
 (%mecab:version)
 ```
