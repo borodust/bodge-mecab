@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/borodust/bodge-mecab.svg)](https://travis-ci.org/borodust/bodge-mecab) [![Build status](https://ci.appveyor.com/api/projects/status/hwq5jg58ltqkvxy7?svg=true)](https://ci.appveyor.com/project/borodust/bodge-mecab)
+
 # MeCab wrapper for Common Lisp
 
 Wrapper over [`MeCab`](http://taku910.github.io/mecab/) library.

@@ -53,7 +53,7 @@ install:
   - curl -L http://bodge.borodust.org/files/install.sh | sh
   - curl -L http://bodge.borodust.org/files/c2ffi-$TRAVIS_OS_NAME-$TARGET_ARCH.zip -o /tmp/c2ffi.zip
   - cd ~/bin/ && unzip /tmp/c2ffi.zip
-  - ln -s $TRAVIS_BUILD_DIR/ ~/quicklisp/local-projects
+  - ln -s $TRAVIS_BUILD_DIR/ ~/quicklisp/local-projects/bodge-$NAME
 
 script:
   - cd $TRAVIS_BUILD_DIR/lib/ && make clean build

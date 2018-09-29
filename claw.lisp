@@ -5,5 +5,5 @@
   :in-package :%mecab
   :local-only t
   :sysincludes (:mecab-includes)
-  :include-sources ("mecab\\.h$")
+  :include-definitions ("(mecab|MECAB)_\\w*")
   :rename-symbols (claw:by-removing-prefixes "mecab_" "MECAB_"))

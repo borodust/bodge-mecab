@@ -8,5 +8,5 @@
   :serial t
   :components ((:file "claw")
                (:static-file "bodge_mecab.h")
-               (:module mecab-includes :pathname "lib/mecab/mecab/include/")
+               (:module mecab-includes :pathname "lib/mecab/mecab/src/")
                (:module spec)))
