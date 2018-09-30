@@ -12,7 +12,7 @@
 local/
 
 # build junk
-lib/*.bodged
+lib/lib*.bodged
 
 # macOS crap
 **/.DS_Store
